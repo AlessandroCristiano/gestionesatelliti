@@ -106,14 +106,22 @@ public class SatelliteController {
 	}
 	
 	@GetMapping("/preDelete/{idSatellite}")
-	public String preDelete(@PathVariable(required = true) Long idSatellite, Model model) {
+	public String preDelete(@PathVariable(required = true) Long idSatellite, Model model, RedirectAttributes redirectAttrs) {
+		
 		model.addAttribute("del_satellite_attr", satelliteService.caricaSingoloElemento(idSatellite));
 		return "satellite/delete";
 	}
 	
 	@PostMapping("/delete")
 	public String delete(@RequestParam Long idDaEliminare, RedirectAttributes redirectAttrs) {
-
+		
+		Satellite satellite= satelliteService.caricaSingoloElemento(idDaEliminare);
+		
+		if(satellite.getDataRientro()!=null && satellite.getDataLancio()!=null && satellite.getDataRientro().after(new Date())) {
+			redirectAttrs.addFlashAttribute("errorMessage", "Non si puo eseguire l'operazione");
+			return "redirect:/satellite";
+		}
+		
 		satelliteService.rimuovi(idDaEliminare);
 
 		redirectAttrs.addFlashAttribute("successMessage", "Operazione eseguita correttamente");

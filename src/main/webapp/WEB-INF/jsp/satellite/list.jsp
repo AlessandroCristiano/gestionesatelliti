@@ -25,6 +25,10 @@
 				  ${successMessage}
 				  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
 				</div>
+				<div class="alert alert-danger alert-dismissible fade show ${errorMessage==null?'d-none':'' }" role="alert">
+					  ${errorMessage}
+					  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
+				</div>
 				<div class="alert alert-danger alert-dismissible fade show d-none" role="alert">
 				  Esempio di operazione fallita!
 				  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
