@@ -61,32 +61,32 @@ public class SatelliteController {
 	
 	@PostMapping("/save")
 	public String save(@Valid @ModelAttribute("insert_satellite_attr") Satellite satellite, BindingResult result,
-			RedirectAttributes redirectAttrs, ModelMap model) {
+			RedirectAttributes redirectAttrs) {
 		
+		//se data lancio è minore di data rientro
 		if(satellite.getDataLancio() != null && satellite.getDataRientro() != null && satellite.getDataLancio().after(satellite.getDataRientro())) {
-			model.addAttribute("errorMessage",
-					"Errore non puoi inserire una data di lancio minore di data rientro");
+			result.rejectValue("dataLancio", "satellite.data.minoreDiRientro");			
 			return "satellite/insert";
 		}
+		//se data rientro è valorizzato ma data lancio no
 		if(satellite.getDataRientro() != null && satellite.getDataLancio()==null) {
-			model.addAttribute("errorMessage",
-					"Errore non puoi inserire una data di rientro senza una data di rientro");
+			result.rejectValue("dataLancio", "satellite.data.rientroValorizzatoMaLancioNo");
 			return "satellite/insert";
 		}
+		//se data Di lancio e rientro è dopo la data odierna lo stato deve essere diverso da disattivato
 		if (satellite.getDataLancio() != null && satellite.getDataRientro() != null && satellite.getDataLancio().before(new Date())
 				&& satellite.getDataRientro().before(new Date()) && (satellite.getStato() == null || satellite.getStato() != StatoSatellite.DISATTIVATO)) {
-			model.addAttribute("errorMessage",
-					"Errore non si possono inserire entrambe le date passate con stato DISATTIVATO");
+			result.rejectValue("stato", "satellite.data.rientroValorizzatoMaLancioNo");
 			return "satellite/insert";
 		}
+		//se data Lancio e rientro sono null ma stato è valorizzato
 		if(satellite.getDataLancio() == null && satellite.getDataRientro() == null && satellite.getStato() != null) {
-			model.addAttribute("errorMessage",
-					"Errore non si puo inserire uno stato se non si ha almeno una data di lancio");
+			result.rejectValue("dataLancio", "satellite.data.datenullMaStatoValorizzato");
 			return "satellite/insert";
 		}
+		//se data lancio ha valore ma non si ha uno stato
 		if(satellite.getDataLancio() != null && satellite.getDataLancio().before(new Date()) && satellite.getStato() == null) {
-			model.addAttribute("errorMessage",
-					"Errore bisogna valorizzare uno stato se il satellite è gia stato lanciato");
+			result.rejectValue("dataLancio", "satellite.data.dataLancioMaSenzaStato");
 			return "satellite/insert";
 		}
 
@@ -129,6 +129,37 @@ public class SatelliteController {
 	@PostMapping("/update")
 	public String update(@Valid @ModelAttribute("update_satellite_attr") Satellite satellite, BindingResult result,
 			RedirectAttributes redirectAttrs) {
+		
+		//se stato è disattivato data Rientro deve essere valorizzata
+		if(satellite.getStato()==StatoSatellite.DISATTIVATO && satellite.getDataRientro()==null) {
+			result.rejectValue("dataRientro", "satellite.data.statoDisattivatoMaDataRientroNull");			
+			return "satellite/update";
+		}
+		
+		//se data Rientro valorizzata deve esserlo anche data Lancio
+		if(satellite.getDataLancio()==null && satellite.getDataRientro()!=null) {
+			result.rejectValue("dataLancio", "satellite.data.dataRientroValorizzataMaLancioNo");
+		}
+				
+		//controlliamo se le date sono valorizzate altrimenti after e before restituiscono null
+		if(satellite.getDataLancio()!=null && satellite.getDataRientro()!=null) {
+			//se la data di lancio è maggiore di data rientro
+			if(satellite.getDataLancio().after(satellite.getDataRientro())) {
+				result.rejectValue("dataLancio", "satellite.data.minoreDiRientro");			
+				return "satellite/update";
+			}
+			//se data Lancio e data Rientro è precedente alla data di oggi lo stato satellite deve essere DISATTIVATO
+			if(satellite.getDataLancio().before(new Date()) && satellite.getDataRientro().before(new Date()) && satellite.getStato() != StatoSatellite.DISATTIVATO) {
+				result.rejectValue("stato", "satellite.stato.datePrecedentiAOggiStatoNonDisattivato");			
+				return "satellite/update";
+			}
+			//se data rientro è valorizzata deve esserlo anche stato
+			if(satellite.getDataRientro()!=null && satellite.getStato()==null) {
+				result.rejectValue("stato", "satellite.stato.dataRientroValorizzataMaStatoNo");			
+				return "satellite/update";
+			}
+			
+		}
 		
 		if (result.hasErrors())
 			return "satellite/update";
