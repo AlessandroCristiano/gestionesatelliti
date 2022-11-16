@@ -101,6 +101,11 @@ public class SatelliteServiceImpl implements SatelliteService{
 	public List<Satellite> cercaRimastiInOrbitaperDieciAnniEFissi(Date data) throws ParseException{
 		return repository.findAllByDataLancioDieciAndStatoFisso(data);
 	}
+
+	@Override
+	public List<Satellite> cercaDataRientroMinoreDiOggiAndStatoNotNull() {
+		return repository.findAllPartitiMaNonRientratiAndNonDisabilitati();
+	}
 	
 	
 	

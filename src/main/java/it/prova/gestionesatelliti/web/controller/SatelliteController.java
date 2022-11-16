@@ -231,5 +231,27 @@ public class SatelliteController {
 		model.addAttribute("satellite_list_attribute", satelliteService.listAllElements());
 		return "satellite/list";
 	}
+	
+	@GetMapping("/disabilitatutti")
+	public String disabilitaTutti(Model model) throws ParseException{		
+		List<Satellite> result= satelliteService.cercaDataRientroMinoreDiOggiAndStatoNotNull();
+		List<Satellite> listAll=satelliteService.listAllElements();
+		model.addAttribute("satellite_list_attribute", result);
+		model.addAttribute("satellite_list_all", listAll);
+		return "satellite/conferma";
+		
+	}
+	
+	@PostMapping("/disabilita")
+	public String disabilita(RedirectAttributes redirectAttrs, Model model) throws ParseException{
+		List<Satellite> result = satelliteService.cercaDataRientroMinoreDiOggiAndStatoNotNull();
+		for(Satellite elementi : result) {
+			elementi.setDataRientro(new Date());
+			elementi.setStato(StatoSatellite.DISATTIVATO);
+			satelliteService.aggiorna(elementi);
+		}
+		redirectAttrs.addFlashAttribute("successMessage", "Operazione eseguita correttamente");
+		return "redirect:/home";
+	}
 
 }

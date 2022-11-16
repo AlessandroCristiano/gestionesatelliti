@@ -26,5 +26,7 @@ public interface SatelliteService {
 	public List<Satellite> cercaDisattivatiMaNonRientrati();
 	
 	public List<Satellite> cercaRimastiInOrbitaperDieciAnniEFissi(Date data) throws ParseException;
+	
+	public List<Satellite> cercaDataRientroMinoreDiOggiAndStatoNotNull();
 
 }

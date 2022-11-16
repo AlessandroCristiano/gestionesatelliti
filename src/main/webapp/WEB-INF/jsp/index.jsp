@@ -56,6 +56,7 @@
 				        <a class="btn btn-primary btn-lg" href="${pageContext.request.contextPath}/satellite/query1">Query 1</a>
 				        <a class="btn btn-primary btn-lg" href="${pageContext.request.contextPath}/satellite/query2">Query 2</a>
 				        <a class="btn btn-primary btn-lg" href="${pageContext.request.contextPath}/satellite/query3">Query 3</a>
+				      	<a class="btn btn-danger btn-lg" href="${pageContext.request.contextPath}/satellite/disabilitatutti">Disabilita tutti</a>
 				      </div>
 			    </div>
 			    
